@@ -168,21 +168,20 @@ header{
 .ot-note{font-size:.67rem;color:var(--muted);margin-top:.65rem;font-style:italic}
 
 /* ── QUICK ACTIONS (hero) ── */
-.quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:.45rem;margin-top:.9rem}
+.quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:.3rem;margin-top:.6rem}
 .qa-btn{
-  background:rgba(19,13,6,.7);border:1px solid rgba(212,146,59,.35);
-  color:var(--text);border-radius:.7rem;padding:.7rem .6rem;
+  background:rgba(19,13,6,.72);border:1px solid rgba(212,146,59,.32);
+  color:var(--text);border-radius:.6rem;padding:.52rem .4rem;
   text-align:center;cursor:pointer;font-family:'DM Sans',sans-serif;
   backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
   transition:all .18s;
 }
 .qa-btn:hover{border-color:var(--accent);background:rgba(36,22,8,.85)}
-.qa-btn.qa-primary{background:var(--accent);color:#0d0800;border-color:var(--accent);grid-column:1/-1}
+.qa-btn.qa-primary{background:var(--accent);color:#0d0800;border-color:var(--accent);grid-column:1/-1;padding:.55rem .4rem}
 .qa-btn.qa-primary:hover{background:var(--accent2)}
-.qa-icon{font-size:1.35rem;display:block;margin-bottom:.22rem}
-.qa-label{font-size:.76rem;font-weight:700;display:block}
-.qa-sub{font-size:.62rem;color:inherit;opacity:.72;margin-top:.05rem;display:block}
-.qa-btn.qa-primary .qa-sub{opacity:.75}
+.qa-icon{font-size:1rem;display:block;margin-bottom:.1rem}
+.qa-label{font-size:.7rem;font-weight:700;display:block}
+.qa-sub{font-size:.58rem;color:inherit;opacity:.7;margin-top:.02rem;display:block}
 
 /* ── RESERVEREN ── */
 .reserveer-intro{font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem}
@@ -198,7 +197,7 @@ header{
 .reserveer-success p{color:var(--muted);font-size:.82rem;line-height:1.6}
 
 /* ── PANELS ── */
-.menu-panels{padding-bottom:5rem}
+.menu-panels{padding-bottom:calc(56px + env(safe-area-inset-bottom) + 2rem)}
 .menu-panel{display:none}.menu-panel.active{display:block}
 .panel-body{padding:1.2rem}
 .panel-title{font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--accent);margin-bottom:.15rem}
@@ -358,7 +357,7 @@ input:focus,textarea:focus{border-color:var(--accent)}
 .badge-place{background:#221a08;color:var(--accent)}.badge-take{background:#2a1a08;color:var(--gold)}
 
 /* ── ADMIN ── */
-.admin-btn{position:fixed;bottom:max(1.2rem,env(safe-area-inset-bottom));right:1.2rem;
+.admin-btn{position:fixed;bottom:calc(56px + env(safe-area-inset-bottom) + .8rem);right:1.2rem;
   background:var(--surface);border:1px solid var(--border);color:var(--muted);
   width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:1rem;
   display:flex;align-items:center;justify-content:center;z-index:50;transition:all .18s}
@@ -439,6 +438,26 @@ input:focus,textarea:focus{border-color:var(--accent)}
 .chat-send{background:var(--accent);color:#0d0800;border:none;padding:.58rem 1.05rem;
   border-radius:2rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.84rem}
 .chat-send:disabled{background:var(--border);color:var(--muted);cursor:not-allowed}
+
+/* ── FOOTER NAV ── */
+.app-footer{
+  position:fixed;bottom:0;left:0;right:0;
+  height:calc(56px + env(safe-area-inset-bottom));
+  padding-bottom:env(safe-area-inset-bottom);
+  background:rgba(19,13,6,.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-top:1px solid rgba(212,146,59,.18);
+  display:flex;align-items:stretch;z-index:200;
+}
+.footer-btn{
+  flex:1;background:none;border:none;color:var(--muted);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;transition:color .15s;gap:.18rem;font-family:'DM Sans',sans-serif;
+  padding:.3rem 0;
+}
+.footer-btn:active,.footer-btn.active{color:var(--accent)}
+.footer-icon{font-size:1.3rem;line-height:1}
+.footer-label{font-size:.58rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.footer-sep{width:1px;background:var(--border);margin:.55rem 0;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -449,7 +468,7 @@ input:focus,textarea:focus{border-color:var(--accent)}
     <div class="logo-main">De Rotterdammer</div>
   </button>
   <button class="cart-btn" onclick="openCart()">
-    🛒 <span class="cart-badge" id="cartCount">0</span>
+    🛒 <span class="cart-badge" id="cartCount">0</span><span id="cartAmt" style="display:none;margin-left:.3rem;font-size:.74rem;font-weight:700"></span>
   </button>
 </header>
 
@@ -495,6 +514,7 @@ input:focus,textarea:focus{border-color:var(--accent)}
        target="_blank" rel="noopener">
       📍 Bekijk op kaart
     </a>
+    <span style="font-size:.72rem;color:var(--muted);display:flex;align-items:center;gap:.25rem">📶 Gratis wifi</span>
     <button class="info-hours-btn" id="hoursBtn" onclick="toggleHours()">
       🕐 <span id="todayLabel">Openingstijden</span>
       <span class="today-badge" id="todayBadge"></span>
@@ -508,7 +528,6 @@ input:focus,textarea:focus{border-color:var(--accent)}
 
 <div class="cat-nav-wrap" style="position:relative">
   <div class="menu-nav-bar">
-    <button class="home-btn" onclick="goHome()" title="Terug naar boven">⌂</button>
     <button class="menu-toggle-btn" onclick="toggleMenuDropdown()">
       ☰ Menu <span id="menuArrow">▾</span>
     </button>
@@ -774,7 +793,6 @@ input:focus,textarea:focus{border-color:var(--accent)}
   <div id="adminOrders"></div>
 </div>
 
-<button class="chat-btn" onclick="openChat()" title="Vraag over het menu">💬</button>
 
 <div class="chat-overlay" id="chatOverlay">
   <div class="chat-modal">
@@ -885,7 +903,7 @@ const DATA = {
   ],
   fris:[
     {n:'Coca Cola / Zero',p:3.00},{n:'Fanta',p:3.00},{n:'Sprite',p:3.00},
-    {n:'Spa Blauw / Rood',p:3.25},{n:'Chocomel',p:3.00},
+    {n:'Spa Blauw / Rood',p:3.00},{n:'Chocomel',p:3.00},
     {n:'Limonade siroop',p:3.00},{n:'Rivella',p:3.00},
     {n:'Bitter Lemon',p:3.00},{n:'Tonic',p:3.00},{n:'Ginger Ale',p:3.00},
     {n:'Ice Tea',p:3.75},{n:"Jus d'Orange",p:3.50},{n:'Red Bull',p:3.50},
@@ -912,21 +930,29 @@ const DATA = {
   ],
   likeur:[
     {n:'Ketel 1 Jenever',p:4.00},{n:'Hoppe Vieux',p:4.25},
+    {n:'Berenburg',p:4.75},{n:'Apfelkorn',p:4.75},
+    {n:'Martini',p:4.75},{n:'Pisang Ambon',p:4.75},
+    {n:'Jagermeister',p:4.75},{n:'Schrobbelaar',p:4.00},
+    {n:'Sambuca',p:5.85},{n:'Tequila',p:5.25},
     {n:'Ricard',p:4.75},{n:'Pacific',p:4.25},{n:'Kahlua',p:4.25},
     {n:'Grand Marnier',p:4.75},{n:'Cointreau',p:4.75},{n:'Tia Maria',p:4.75},
     {n:'Campari',p:4.75},{n:'Baileys',p:4.75},
     {n:'Disaronno Amaretto',p:4.75},{n:'Aperol',p:4.25},{n:'Licor 43',p:5.50},
+    {n:'Southern Comfort',p:5.50},
   ],
   whisky:[
     {n:'Martel Cognac',p:6.50},{n:'Joseph Guy',p:4.50},
     {n:'Chivas Regal',p:6.50},{n:'Johnny Walker Red',p:5.50},
     {n:'Johnny Walker Black',p:6.50},{n:'Johnny Walker Double Black',p:7.50},
     {n:'Johnny Walker Blue',p:9.50},{n:'Jack Daniels',p:5.50},
-    {n:'Four Roses',p:5.50},{n:'Jameson',p:5.50},
+    {n:"Four Roses",p:5.50},{n:'Jameson',p:5.50},
+    {n:'The Famous Grouse',p:4.50},{n:"Clarke's Bourbon",p:6.00},
   ],
   rum:[
-    {n:'Bacardi',p:4.75},{n:'Smirnoff',p:4.75},
-    {n:'Absolut Vodka',p:6.50},{n:'Malibu',p:4.75},{n:'Gordons Gin',p:4.75},
+    {n:'Bacardi Blanca',p:4.75},{n:'Bacardi Razz',p:4.75},
+    {n:'Bacardi Lemon',p:4.75},{n:'Bacardi Carta Oro',p:5.50},
+    {n:'Smirnoff',p:4.75},{n:'Absolut Vodka',p:6.50},
+    {n:'Malibu',p:4.75},{n:'Passoa',p:4.75},{n:'Gordons Gin',p:4.75},
   ],
 };
 
@@ -1024,7 +1050,11 @@ function addToCart(item){
 }
 
 function updateBadge(){
-  document.getElementById('cartCount').textContent = cart.reduce((a,c) => a+c.qty, 0);
+  const count = cart.reduce((a,c) => a+c.qty, 0);
+  const total = cart.reduce((a,c) => a+c.p*c.qty, 0);
+  document.getElementById('cartCount').textContent = count;
+  const amtEl = document.getElementById('cartAmt');
+  if(amtEl){ amtEl.style.display = count ? '' : 'none'; amtEl.textContent = '€'+fmt(total); }
 }
 
 function updateCards(){
@@ -1497,5 +1527,17 @@ if('serviceWorker'in navigator){const sw=`const C='rdm-v2';self.addEventListener
 let _dp=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();_dp=e;const b=document.createElement('div');b.style.cssText='position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);background:#d4923b;color:#0d0800;padding:.68rem 1.2rem;border-radius:.75rem;font-family:DM Sans,sans-serif;font-weight:700;font-size:.83rem;z-index:150;box-shadow:0 4px 16px rgba(0,0,0,.4);cursor:pointer;white-space:nowrap';b.textContent='📲 Voeg toe aan beginscherm';b.onclick=()=>{_dp.prompt();b.remove();};document.body.appendChild(b);setTimeout(()=>b.remove(),8000);});
 </script>
+
+<nav class="app-footer" id="appFooter">
+  <button class="footer-btn" id="footerHome" onclick="goHome()">
+    <span class="footer-icon">⌂</span>
+    <span class="footer-label">Home</span>
+  </button>
+  <div class="footer-sep"></div>
+  <button class="footer-btn" id="footerChat" onclick="openChat()">
+    <span class="footer-icon">💬</span>
+    <span class="footer-label">Menu-hulp</span>
+  </button>
+</nav>
 </body>
 </html>
