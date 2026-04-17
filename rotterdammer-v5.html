@@ -1388,14 +1388,21 @@ function buildMenuContext(){
 
 // ── HOME / NAVIGATIE ──────────────────────────────────────
 function goHome(){
-  window.scrollTo({top:0, behavior:'smooth'});
-  document.querySelectorAll('.menu-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('panel-hoofd').classList.add('active');
-  document.getElementById('menuActiveLabel').textContent = 'Hoofdgerechten';
-  document.querySelectorAll('.dd-item').forEach(b => b.classList.remove('active'));
-  const hBtn = document.querySelector('.dd-item[onclick*="\'hoofd\'"]');
-  if(hBtn) hBtn.classList.add('active');
+  // Sluit open overlays
+  document.getElementById('cartOverlay')?.classList.remove('open');
+  document.getElementById('chatOverlay')?.classList.remove('open');
   closeMenuDropdown();
+  // Reset paneel naar hoofdgerechten
+  document.querySelectorAll('.menu-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-hoofd')?.classList.add('active');
+  const lbl = document.getElementById('menuActiveLabel');
+  if(lbl) lbl.textContent = 'Hoofdgerechten';
+  document.querySelectorAll('.dd-item').forEach(b => {
+    b.classList.toggle('active', (b.getAttribute('onclick')||'').includes("'hoofd'"));
+  });
+  // Scroll naar boven — directe methode werkt het betrouwbaarst op mobiel
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
 }
 
 // ── QUICK ORDER (hero knoppen) ────────────────────────────
