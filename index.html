@@ -80,7 +80,7 @@ header{
 .hours-day.today{color:var(--accent);font-weight:700}
 .hours-time.today{color:var(--accent);font-weight:700}
 .hours-time.gesloten{color:var(--danger)}
-.info-strip-wrap{position:relative}
+.info-strip-wrap{position:relative;z-index:110}
 
 /* ── MENU DROPDOWN NAV ── */
 .cat-nav-wrap{
@@ -91,6 +91,10 @@ header{
   border-bottom:1px solid var(--border);
 }
 .menu-nav-bar{display:flex;align-items:center;justify-content:space-between;padding:.5rem 1.1rem;gap:.6rem}
+.home-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .18s;flex-shrink:0}
+.home-btn:hover{border-color:var(--accent);color:var(--accent)}
+.logo-btn{background:none;border:none;cursor:pointer;text-align:left;padding:0;transition:opacity .15s}
+.logo-btn:hover{opacity:.8}
 .menu-toggle-btn{
   display:inline-flex;align-items:center;gap:.35rem;
   background:var(--accent);color:#0d0800;border:none;
@@ -440,10 +444,10 @@ input:focus,textarea:focus{border-color:var(--accent)}
 <body>
 
 <header>
-  <div>
+  <button class="logo-btn" onclick="goHome()">
     <div class="logo-sub">Brasserie</div>
     <div class="logo-main">De Rotterdammer</div>
-  </div>
+  </button>
   <button class="cart-btn" onclick="openCart()">
     🛒 <span class="cart-badge" id="cartCount">0</span>
   </button>
@@ -504,6 +508,7 @@ input:focus,textarea:focus{border-color:var(--accent)}
 
 <div class="cat-nav-wrap" style="position:relative">
   <div class="menu-nav-bar">
+    <button class="home-btn" onclick="goHome()" title="Terug naar boven">⌂</button>
     <button class="menu-toggle-btn" onclick="toggleMenuDropdown()">
       ☰ Menu <span id="menuArrow">▾</span>
     </button>
@@ -1349,6 +1354,18 @@ async function sendChat(){
 function buildMenuContext(){
   const lbl={uitsmijter:'Uitsmijter',brood:'Lunch op brood',hoofd:'Hoofdgerechten',friet:'Friet',snacks:'Snacks',borrel:'Borrelhapjes',bitter:'Bittergarnituur',desserts:'Desserts',fris:'Frisdrank',koffie:'Koffie/Thee',bier:'Bier','wijn-glas':'Wijn per glas','wijn-karaf':'Wijn per karaf',likeur:'Jenever/Likeur',whisky:'Whisky/Cognac',rum:'Rum/Vodka/Gin'};
   return Object.keys(DATA).map(k=>`[${lbl[k]||k}]\n`+DATA[k].map(it=>`- ${it.n} (${it.p>0?'€'+it.p.toFixed(2):'op aanvraag'})${it.d?' — '+it.d:''}`).join('\n')).join('\n\n');
+}
+
+// ── HOME / NAVIGATIE ──────────────────────────────────────
+function goHome(){
+  window.scrollTo({top:0, behavior:'smooth'});
+  document.querySelectorAll('.menu-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-hoofd').classList.add('active');
+  document.getElementById('menuActiveLabel').textContent = 'Hoofdgerechten';
+  document.querySelectorAll('.dd-item').forEach(b => b.classList.remove('active'));
+  const hBtn = document.querySelector('.dd-item[onclick*="\'hoofd\'"]');
+  if(hBtn) hBtn.classList.add('active');
+  closeMenuDropdown();
 }
 
 // ── QUICK ORDER (hero knoppen) ────────────────────────────
