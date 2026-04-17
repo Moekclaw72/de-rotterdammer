@@ -148,6 +148,51 @@ header{
 }
 .maps-link:hover{background:var(--accent2)}
 
+/* ── OPENINGSTIJDEN CARD ── */
+.openingstijden-card{
+  margin-top:1.1rem;background:var(--card);border:1px solid var(--border);
+  border-radius:.75rem;padding:.9rem 1rem;
+}
+.ot-title{font-family:'Playfair Display',serif;color:var(--accent);font-size:1rem;margin-bottom:.7rem}
+.ot-grid{display:grid;grid-template-columns:auto 1fr;gap:.25rem .9rem;font-size:.8rem}
+.ot-day{color:var(--muted);font-weight:500;padding:.15rem 0}
+.ot-day.ot-today{color:var(--accent);font-weight:700}
+.ot-time{color:var(--text);padding:.15rem 0}
+.ot-time.ot-today{color:var(--accent);font-weight:700}
+.ot-time.ot-closed{color:var(--danger)}
+.ot-today-chip{display:inline-block;background:var(--accent);color:#0d0800;font-size:.58rem;font-weight:700;padding:.06rem .38rem;border-radius:2rem;margin-left:.4rem;vertical-align:middle}
+.ot-note{font-size:.67rem;color:var(--muted);margin-top:.65rem;font-style:italic}
+
+/* ── QUICK ACTIONS (hero) ── */
+.quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:.45rem;margin-top:.9rem}
+.qa-btn{
+  background:rgba(19,13,6,.7);border:1px solid rgba(212,146,59,.35);
+  color:var(--text);border-radius:.7rem;padding:.7rem .6rem;
+  text-align:center;cursor:pointer;font-family:'DM Sans',sans-serif;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  transition:all .18s;
+}
+.qa-btn:hover{border-color:var(--accent);background:rgba(36,22,8,.85)}
+.qa-btn.qa-primary{background:var(--accent);color:#0d0800;border-color:var(--accent);grid-column:1/-1}
+.qa-btn.qa-primary:hover{background:var(--accent2)}
+.qa-icon{font-size:1.35rem;display:block;margin-bottom:.22rem}
+.qa-label{font-size:.76rem;font-weight:700;display:block}
+.qa-sub{font-size:.62rem;color:inherit;opacity:.72;margin-top:.05rem;display:block}
+.qa-btn.qa-primary .qa-sub{opacity:.75}
+
+/* ── RESERVEREN ── */
+.reserveer-intro{font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem}
+.reserveer-form{display:flex;flex-direction:column;gap:.55rem}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.reserveer-btn{background:var(--accent);color:#0d0800;border:none;width:100%;padding:.88rem;
+  border-radius:.6rem;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.9rem;
+  cursor:pointer;transition:all .18s;margin-top:.3rem}
+.reserveer-btn:hover{background:var(--accent2)}
+.reserveer-success{display:none;text-align:center;padding:1.5rem 0}
+.reserveer-success.show{display:block}
+.reserveer-success h3{font-family:'Playfair Display',serif;color:var(--accent);font-size:1.2rem;margin-bottom:.4rem}
+.reserveer-success p{color:var(--muted);font-size:.82rem;line-height:1.6}
+
 /* ── PANELS ── */
 .menu-panels{padding-bottom:5rem}
 .menu-panel{display:none}.menu-panel.active{display:block}
@@ -414,6 +459,28 @@ input:focus,textarea:focus{border-color:var(--accent)}
     <div class="hero-eyebrow">Rotterdam Botlek</div>
     <h1 class="hero-title">Bestel <em>online</em><br>bij ons</h1>
     <p class="hero-sub">Eten &amp; drinken — afhalen of ter plaatse</p>
+    <div class="quick-actions">
+      <button class="qa-btn qa-primary" onclick="quickOrder('place')">
+        <span class="qa-icon">🍽️</span>
+        <span class="qa-label">Online bestellen</span>
+        <span class="qa-sub">Bestel aan tafel of voor afhaal</span>
+      </button>
+      <button class="qa-btn" onclick="quickOrder('take')">
+        <span class="qa-icon">🥡</span>
+        <span class="qa-label">Afhalen</span>
+        <span class="qa-sub">Klaar aan de bar</span>
+      </button>
+      <button class="qa-btn" onclick="quickOrder('place')">
+        <span class="qa-icon">🪑</span>
+        <span class="qa-label">In restaurant eten</span>
+        <span class="qa-sub">Kies en bestel aan tafel</span>
+      </button>
+      <button class="qa-btn" onclick="selectCat('reserveren','📅 Reserveren')">
+        <span class="qa-icon">📅</span>
+        <span class="qa-label">Reserveren</span>
+        <span class="qa-sub">Tafel reserveren</span>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -463,6 +530,7 @@ input:focus,textarea:focus{border-color:var(--accent)}
     </div>
     <div class="dd-divider"></div>
     <div class="dd-items">
+      <button class="dd-item highlight" onclick="selectCat('reserveren','📅 Reserveren')">📅 Reserveren</button>
       <button class="dd-item highlight" onclick="selectCat('impressie','📸 Ontdek ons eetcafé')">📸 Ontdek ons eetcafé</button>
     </div>
   </div>
@@ -570,6 +638,51 @@ input:focus,textarea:focus{border-color:var(--accent)}
     </div>
   </div>
 
+  <div class="menu-panel" id="panel-reserveren">
+    <div class="panel-body">
+      <div class="panel-title">📅 Reserveren</div>
+      <p class="reserveer-intro">Tafel reserveren bij Brasserie De Rotterdammer? Vul het formulier in en we bevestigen zo snel mogelijk via WhatsApp of telefoon.</p>
+      <div class="reserveer-form" id="reserveerForm">
+        <div class="form-group">
+          <label>Naam</label>
+          <input type="text" id="resNaam" placeholder="Jouw naam">
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Datum</label>
+            <input type="date" id="resDatum">
+          </div>
+          <div class="form-group">
+            <label>Tijd</label>
+            <input type="time" id="resTijd" min="11:00" max="21:30">
+          </div>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Aantal personen</label>
+            <input type="number" id="resPersonen" placeholder="2" min="1" max="50">
+          </div>
+          <div class="form-group">
+            <label>Telefoon / WhatsApp</label>
+            <input type="tel" id="resTel" placeholder="+316...">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Opmerking (optioneel)</label>
+          <textarea class="note-area" id="resOpmerking" placeholder="Allergieen, kinderstoel, verjaardag..."></textarea>
+        </div>
+        <button class="reserveer-btn" onclick="stuurReservering()">📅 Reservering aanvragen</button>
+      </div>
+      <div class="reserveer-success" id="reserveerSuccess">
+        <div style="font-size:2.2rem;margin-bottom:.6rem">🎉</div>
+        <h3>Aanvraag verstuurd!</h3>
+        <p>We nemen zo snel mogelijk contact met je op ter bevestiging.<br>Tot snel bij Brasserie De Rotterdammer!</p>
+        <br>
+        <button class="reserveer-btn" onclick="nieuweReservering()" style="width:auto;padding:.55rem 1.4rem">Nieuwe reservering</button>
+      </div>
+    </div>
+  </div>
+
   <div class="menu-panel" id="panel-impressie">
     <div class="panel-body">
       <div class="panel-title">📸 Ontdek ons eetcafé</div>
@@ -608,6 +721,12 @@ input:focus,textarea:focus{border-color:var(--accent)}
            target="_blank" rel="noopener">
           🗺️ Open in Google Maps
         </a>
+      </div>
+
+      <div class="openingstijden-card">
+        <div class="ot-title">🕐 Openingstijden</div>
+        <div class="ot-grid" id="impHoursGrid"></div>
+        <p class="ot-note">* Tijden kunnen afwijken op feestdagen</p>
       </div>
     </div>
   </div>
@@ -972,8 +1091,12 @@ function renderCart(){
     document.getElementById('cons-take').classList.toggle('active-btn', selConsume==='take');
     document.getElementById('tafelRow').classList.toggle('show', selConsume==='place');
   }
+  if(selConsume === 'take'){
+    ['pay-wero','pay-bar'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display='none'; });
+    if(!selPay){ selPay='ideal'; }
+  }
   if(selPay){
-    document.getElementById('pay-'+selPay).classList.add('selected');
+    document.getElementById('pay-'+selPay)?.classList.add('selected');
     renderPayDetails(selPay, total);
   }
   checkEnableBtn();
@@ -996,11 +1119,30 @@ function renderPayDetails(method, total){
 }
 
 function selectConsume(type){
-  if(selConsume === type){ selConsume=null; document.getElementById('cons-place').className='cons-btn'; document.getElementById('cons-take').className='cons-btn'; document.getElementById('tafelRow').className='form-group tafel-row'; checkEnableBtn(); return; }
+  if(selConsume === type){ selConsume=null; selPay=null; document.getElementById('cons-place').className='cons-btn'; document.getElementById('cons-take').className='cons-btn'; document.getElementById('tafelRow').className='form-group tafel-row'; document.querySelectorAll('.pay-btn').forEach(b=>b.classList.remove('selected')); document.getElementById('payDetails').innerHTML=''; checkEnableBtn(); return; }
   selConsume = type;
   document.getElementById('cons-place').className = 'cons-btn' + (type==='place'?' active-btn':'');
   document.getElementById('cons-take').className  = 'cons-btn' + (type==='take'?' active-btn':'');
   document.getElementById('tafelRow').className   = 'form-group tafel-row' + (type==='place'?' show':'');
+  if(type === 'take'){
+    // Afhalen: automatisch iDEAL selecteren
+    selPay = 'ideal';
+    document.querySelectorAll('.pay-btn').forEach(b=>b.classList.remove('selected'));
+    const idealBtn = document.getElementById('pay-ideal');
+    if(idealBtn) idealBtn.classList.add('selected');
+    const total = cart.reduce((a,c)=>a+c.p*c.qty,0);
+    renderPayDetails('ideal', total);
+    // Verberg Wero en Bar-knoppen
+    ['pay-wero','pay-bar'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display='none'; });
+  } else {
+    // Ter plaatse: alle betaalmethoden tonen
+    ['pay-wero','pay-bar'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display=''; });
+    if(selPay && selPay !== 'ideal'){
+      selPay = null;
+      document.querySelectorAll('.pay-btn').forEach(b=>b.classList.remove('selected'));
+      document.getElementById('payDetails').innerHTML='';
+    }
+  }
   checkEnableBtn();
 }
 
@@ -1209,6 +1351,42 @@ function buildMenuContext(){
   return Object.keys(DATA).map(k=>`[${lbl[k]||k}]\n`+DATA[k].map(it=>`- ${it.n} (${it.p>0?'€'+it.p.toFixed(2):'op aanvraag'})${it.d?' — '+it.d:''}`).join('\n')).join('\n\n');
 }
 
+// ── QUICK ORDER (hero knoppen) ────────────────────────────
+function quickOrder(type){
+  selConsume = type;
+  document.querySelector('.cat-nav-wrap').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// ── RESERVERING ───────────────────────────────────────────
+function stuurReservering(){
+  const naam     = document.getElementById('resNaam')?.value.trim();
+  const datum    = document.getElementById('resDatum')?.value;
+  const tijd     = document.getElementById('resTijd')?.value;
+  const personen = document.getElementById('resPersonen')?.value;
+  const tel      = document.getElementById('resTel')?.value.trim();
+  if(!naam || !datum || !tijd || !personen || !tel){
+    alert('Vul alle verplichte velden in (naam, datum, tijd, personen en telefoon).'); return;
+  }
+  const res = {
+    naam, datum, tijd, personen,
+    tel, opmerking: document.getElementById('resOpmerking')?.value.trim() || '',
+    ts: Date.now()
+  };
+  const lijst = JSON.parse(localStorage.getItem('rdm_reserveringen') || '[]');
+  lijst.unshift(res);
+  localStorage.setItem('rdm_reserveringen', JSON.stringify(lijst));
+  document.getElementById('reserveerForm').style.display = 'none';
+  document.getElementById('reserveerSuccess').classList.add('show');
+}
+
+function nieuweReservering(){
+  ['resNaam','resDatum','resTijd','resPersonen','resTel','resOpmerking'].forEach(id=>{
+    const el = document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('reserveerForm').style.display = '';
+  document.getElementById('reserveerSuccess').classList.remove('show');
+}
+
 // ── OPENINGSTIJDEN ────────────────────────────────────────
 const HOURS = [
   {dag:'Maandag',    open:'11:00',sluit:'22:00'},
@@ -1231,14 +1409,21 @@ const HOURS = [
   badge.textContent = isOpen ? 'Open' : 'Gesloten';
   if(!isOpen) btn.classList.add('closed');
 
-  const grid = document.getElementById('hoursGrid');
-  grid.innerHTML = HOURS.map((h, i) => {
+  const hoursHTML = HOURS.map((h, i) => {
     const isToday = i === todayIdx;
-    const cls = isToday ? ' class="today"' : '';
-    const tijdCls = isToday ? ' class="today"' : (h.open ? '' : ' class="gesloten"');
     return `<span class="hours-day${isToday?' today':''}">${h.dag}</span>` +
            `<span class="hours-time${!h.open?' gesloten':''}${isToday?' today':''}">${h.open ? h.open+'–'+h.sluit : 'Gesloten'}</span>`;
   }).join('');
+  document.getElementById('hoursGrid').innerHTML = hoursHTML;
+
+  const otHTML = HOURS.map((h, i) => {
+    const isToday = i === todayIdx;
+    const chip = isToday ? '<span class="ot-today-chip">Vandaag</span>' : '';
+    return `<span class="ot-day${isToday?' ot-today':''}">${h.dag}${chip}</span>` +
+           `<span class="ot-time${!h.open?' ot-closed':''}${isToday?' ot-today':''}">${h.open ? h.open+'–'+h.sluit : 'Gesloten'}</span>`;
+  }).join('');
+  const impGrid = document.getElementById('impHoursGrid');
+  if(impGrid) impGrid.innerHTML = otHTML;
 })();
 
 let hoursOpen = false;
