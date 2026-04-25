@@ -511,7 +511,7 @@ input:focus,textarea:focus{border-color:var(--accent)}
   </div>
 </div>
 
-<div class="cat-nav-wrap" style="position:relative">
+<div class="cat-nav-wrap">
   <div class="menu-nav-bar">
     <button class="menu-toggle-btn" onclick="toggleMenuDropdown()">
       ☰ Menu <span id="menuArrow">▾</span>
@@ -1011,7 +1011,8 @@ function selectCat(id, label){
   const panel = document.getElementById('panel-' + id);
   if(panel) panel.classList.add('active');
   closeMenuDropdown();
-  window.scrollTo({top:0, behavior:'smooth'});
+  const catNav = document.querySelector('.cat-nav-wrap');
+  if(catNav) window.scrollTo({top: catNav.offsetTop - 54, behavior:'smooth'});
 }
 
 // ── CART OPERATIONS ───────────────────────────────────────
@@ -1394,7 +1395,8 @@ function goHome(){
 // ── QUICK ORDER (hero knoppen) ────────────────────────────
 function quickOrder(type){
   selConsume = type;
-  document.querySelector('.cat-nav-wrap').scrollIntoView({behavior:'smooth', block:'start'});
+  const catNav = document.querySelector('.cat-nav-wrap');
+  if(catNav) window.scrollTo({top: catNav.offsetTop - 54, behavior:'smooth'});
 }
 
 // ── RESERVERING ───────────────────────────────────────────
