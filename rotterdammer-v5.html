@@ -811,9 +811,61 @@ const TIKKIE_URL = 'https://tikkie.me/pay/JOUWLINK'; // ← invullen
 const NAAM       = 'Brasserie De Rotterdammer';
 const ADMIN_PIN  = '1234'; // ← wijzig dit
 
-// ── GEMINI AI ─────────────────────────────────────────────
-const GEMINI_API_KEY = ''; // ← aistudio.google.com/apikey
-const GEMINI_MODEL   = 'gemini-2.5-flash';
+// ── DEMO CHATBOT FAQ ──────────────────────────────────────
+const FAQ = [
+  { keys:['dagschotel','dagmenu','vandaag','dag schotel'],
+    answer:'De dagschotel wisselt elke dag! 🍽️ Hij wordt geserveerd met salade, cole-slaw en gebakken aardappelen. Vraag even aan de bediening wat de keuze van vandaag is.' },
+  { keys:['vegetarisch','vegan','geen vlees','plantaardig'],
+    answer:'Ja hoor, vegetarische opties zijn er! 🥦 Kijk eens naar de Paddenstoelen uitsmijter (€11,50), Toast Paddenstoelen (€9,95) of de Carpaccio (€15,50). Vraag de bediening voor meer info.' },
+  { keys:['gluten','allergie','intolerantie','noten','lactose'],
+    answer:'We houden graag rekening met allergieën! ⚠️ Meld dit altijd bij de bediening zodat ze je goed kunnen informeren over de keuzes van die dag.' },
+  { keys:['aanrader','aanbevel','populair','lekker','tip','wat neem','beste'],
+    answer:'Onze toppers: de Biefstuk (€22,50) 🥩, de Botlek Burger (€17,50) 🍔 en voor een lichte hap de Carpaccio (€15,50). Smullen gegarandeerd!' },
+  { keys:['biefstuk','steak'],
+    answer:'De Biefstuk kost €22,50 🥩 — met champignons, ui, salade, cole-slaw en frites. Een echte klassieker!' },
+  { keys:['burger','hamburger'],
+    answer:'De Botlek Burger (200g) is €17,50 🍔 — met kaas, sla, champignons en frites. Ook een Broodje Runderburger voor €13,50!' },
+  { keys:['saté','satay'],
+    answer:'Hollands Satéetje: 2 spiesen kip van de BBQ met pindasaus en salade voor €17,50 🍢 Lekker!' },
+  { keys:['friet','frites','patat'],
+    answer:'Friet met mayo/ketchup/curry €4,25 🍟, met pindasaus €5,25, of friet speciaal (mayo, curry, uitjes) €5,25.' },
+  { keys:['kroket','bitterbal','snack','borrel'],
+    answer:'Bitterballen (4 st) €3,75, rundvleeskroket €3,00 los of €4,00 op brood, en nog veel meer in het snackmenu! 🍟' },
+  { keys:['dessert','nagerecht','ijs','ijsje','toetje'],
+    answer:'Voor dessert: ijscoupes vanaf €4,50 🍨, Dame Blanche, Banana Split of onze Surinaamse Rum Cake — ook met slagroom!' },
+  { keys:['bier','biertje','pils'],
+    answer:'Bierselectie: Huispils €3,00 🍺, Heineken €3,50, Affligem Blond €4,50, IPA €4,75 en meer. Ook alcoholvrij beschikbaar!' },
+  { keys:['wijn','wine','rosé'],
+    answer:'Wijn per glas €4,00-€5,00 🍷 of per karaf €12,50-€14,50 — rood, wit, rosé en Chardonnay.' },
+  { keys:['koffie','cappuccino','espresso','latte','thee'],
+    answer:'Koffie, cappuccino, latte en espresso €3,50 ☕ Thee €3,00. Ook Irish Coffee €9,50 en warme chocomelk met slagroom €4,50!' },
+  { keys:['openingstijd','open','gesloten','hoe laat','wanneer'],
+    answer:'We zijn open: ma t/m do 11:00-22:00, vrijdag 11:00-20:00, zaterdag 14:00-20:00 🕐 Zondag gesloten.' },
+  { keys:['parkeren','parkeer','auto'],
+    answer:'Gratis parkeren achter het pand! 🅿️ Geen gedoe met parkeermeter.' },
+  { keys:['reserveren','reservering','tafel','boeken'],
+    answer:'Reserveren kan via het formulier in de app (tik op 📅 Reserveren). We bevestigen zo snel mogelijk! 😊' },
+  { keys:['wifi','internet','wachtwoord'],
+    answer:'Gratis wifi beschikbaar! 📶 Vraag het wachtwoord even aan de bediening.' },
+  { keys:['betalen','betaal','pin','contant','ideal','tikkie'],
+    answer:'Betalen kan met pin, contant, iDEAL of Tikkie 💳 — aan de bar of vooraf via de app.' },
+  { keys:['afhalen','meenemen','takeaway','take away'],
+    answer:'Ja, afhalen kan! 🥡 Bestel via de app, kies "Meenemen" en haal op aan de bar.' },
+  { keys:['adres','locatie','waar','hoe kom'],
+    answer:'We zitten in Rotterdam Botlek 📍 Gratis parkeren achter het pand. Tik op "Bekijk op kaart" voor de route!' },
+];
+
+const HOLDING = [
+  'Goede vraag! 🤔 Dat check ik even — vraag het ook gerust aan de bediening, die helpen je direct verder!',
+  'Hmm, dat weet ik zo niet zeker. Onze bediening helpt je daar graag mee! 😊',
+  'Interessante vraag! Voor het beste antwoord kun je het even aan de bediening vragen — die weten het zeker. 👌',
+];
+
+function faqMatch(q){
+  const s = q.toLowerCase();
+  for(const f of FAQ){ if(f.keys.some(k => s.includes(k))) return f.answer; }
+  return null;
+}
 
 // ── HELPERS ───────────────────────────────────────────────
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -1344,26 +1396,13 @@ async function sendChat(){
   document.getElementById('chatSend').disabled=true;
   const typing=addChatMsg('bot','...'); typing.classList.add('msg-typing');
 
-  if(!GEMINI_API_KEY){
-    typing.remove();
-    addChatMsg('bot','⚠️ De chatbot is nog niet ingesteld. Vul een gratis Gemini API-key in (aistudio.google.com/apikey).');
-    document.getElementById('chatSend').disabled=false; return;
-  }
-  try{
-    const sys=`Je bent een vriendelijke menu-assistent voor ${NAAM}, een eetcafé in Rotterdam Botlek. Antwoord KORT (max 3 zinnen), in de taal van de vraag. MENU:\n`+buildMenuContext();
-    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({contents:chatHistory.concat([{role:'user',parts:[{text:q}]}]),systemInstruction:{parts:[{text:sys}]},generationConfig:{temperature:0.7,maxOutputTokens:250}})
-    });
-    const data=await res.json(); typing.remove();
-    if(data.error){ addChatMsg('bot','⚠️ Er ging iets mis. Vraag het aan de bediening.'); }
-    else{
-      const ans=data.candidates?.[0]?.content?.parts?.[0]?.text||'Vraag het even aan de bediening.';
-      addChatMsg('bot',ans);
-      chatHistory.push({role:'user',parts:[{text:q}]},{role:'model',parts:[{text:ans}]});
-      if(chatHistory.length>20) chatHistory=chatHistory.slice(-20);
-    }
-  } catch(e){ typing.remove(); addChatMsg('bot','⚠️ Geen verbinding. Vraag het aan de bediening.'); }
+  const delay = 600 + Math.random()*600;
+  await new Promise(r => setTimeout(r, delay));
+  typing.remove();
+
+  const answer = faqMatch(q) || HOLDING[Math.floor(Math.random()*HOLDING.length)];
+  addChatMsg('bot', answer);
+
   document.getElementById('chatSend').disabled=false;
   document.getElementById('chatInput').focus();
 }
